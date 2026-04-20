@@ -35,7 +35,7 @@ export function getPage(slug: string): Promise<Page> {
 export interface AnnouncementsParams {
   page?: number;
   limit?: number;
-  status?: string;
+  search?: string;
 }
 
 export interface AnnouncementsResponse {
@@ -50,7 +50,7 @@ export function getAnnouncements(params?: AnnouncementsParams): Promise<Announce
   const q = new URLSearchParams();
   if (params?.page) q.set('page', String(params.page));
   if (params?.limit) q.set('limit', String(params.limit));
-  if (params?.status) q.set('status', params.status);
+  if (params?.search) q.set('search', params.search);
   return apiFetch<AnnouncementsResponse>(`/announcements${q.toString() ? '?' + q : ''}`);
 }
 
@@ -72,11 +72,14 @@ export function adminLogin(email: string, password: string): Promise<{ accessTok
 }
 
 export function adminGetPages(token: string): Promise<Page[]> {
-  return apiFetch<Page[]>('/pages', { headers: authHeaders(token) });
+  return apiFetch<Page[]>('/pages/manage', { headers: authHeaders(token) });
 }
 
-export function adminGetPage(id: string, token: string): Promise<Page> {
-  return apiFetch<Page>(`/pages/${id}`, { headers: authHeaders(token) });
+export async function adminGetPage(id: string, token: string): Promise<Page> {
+  const pages = await apiFetch<Page[]>('/pages/manage', { headers: authHeaders(token) });
+  const page = pages.find(p => p._id === id);
+  if (!page) throw new Error('Page not found');
+  return page;
 }
 
 export function adminCreatePage(data: Partial<Page>, token: string): Promise<Page> {
@@ -88,10 +91,12 @@ export function adminCreatePage(data: Partial<Page>, token: string): Promise<Pag
 }
 
 export function adminUpdatePage(id: string, data: Partial<Page>, token: string): Promise<Page> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { slug: _slug, ...rest } = data as Record<string, unknown>;
   return apiFetch<Page>(`/pages/${id}`, {
     method: 'PATCH',
     headers: authHeaders(token),
-    body: JSON.stringify(data),
+    body: JSON.stringify(rest),
   });
 }
 
@@ -100,11 +105,14 @@ export function adminDeletePage(id: string, token: string): Promise<void> {
 }
 
 export function adminGetAnnouncements(token: string): Promise<AnnouncementsResponse> {
-  return apiFetch<AnnouncementsResponse>('/announcements', { headers: authHeaders(token) });
+  return apiFetch<AnnouncementsResponse>('/announcements/manage?limit=100', { headers: authHeaders(token) });
 }
 
-export function adminGetAnnouncement(id: string, token: string): Promise<Announcement> {
-  return apiFetch<Announcement>(`/announcements/${id}`, { headers: authHeaders(token) });
+export async function adminGetAnnouncement(id: string, token: string): Promise<Announcement> {
+  const res = await apiFetch<AnnouncementsResponse>('/announcements/manage?limit=100', { headers: authHeaders(token) });
+  const item = res.items?.find(a => a._id === id);
+  if (!item) throw new Error('Announcement not found');
+  return item;
 }
 
 export function adminCreateAnnouncement(data: Partial<Announcement>, token: string): Promise<Announcement> {
@@ -116,10 +124,12 @@ export function adminCreateAnnouncement(data: Partial<Announcement>, token: stri
 }
 
 export function adminUpdateAnnouncement(id: string, data: Partial<Announcement>, token: string): Promise<Announcement> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { slug: _slug, ...rest } = data as Record<string, unknown>;
   return apiFetch<Announcement>(`/announcements/${id}`, {
     method: 'PATCH',
     headers: authHeaders(token),
-    body: JSON.stringify(data),
+    body: JSON.stringify(rest),
   });
 }
 
@@ -132,10 +142,12 @@ export function adminGetSettings(token: string): Promise<Settings> {
 }
 
 export function adminUpdateSettings(data: Partial<Settings>, token: string): Promise<Settings> {
+  const { _id, createdAt, updatedAt, __v, ...payload } = data as Record<string, unknown>;
+  void _id; void createdAt; void updatedAt; void __v;
   return apiFetch<Settings>('/settings', {
     method: 'PATCH',
     headers: authHeaders(token),
-    body: JSON.stringify(data),
+    body: JSON.stringify(payload),
   });
 }
 

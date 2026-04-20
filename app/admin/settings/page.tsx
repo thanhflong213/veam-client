@@ -1,16 +1,20 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { adminGetSettings, adminUpdateSettings, adminUploadImage } from '../../lib/api';
+import { adminGetSettings, adminUpdateSettings, adminUploadImage, adminGetAnnouncements } from '../../lib/api';
 import { getToken } from '../../lib/auth';
 import { showToast } from '../components/Toast';
-import type { HeroSlide, Settings } from '../../lib/types';
+import type { Announcement, HeroSlide, Settings } from '../../lib/types';
+import { NavMenuEditor } from '../components/NavMenuEditor';
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [allAnnouncements, setAllAnnouncements] = useState<Announcement[]>([]);
   const slideImageRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [slideImageModes, setSlideImageModes] = useState<Record<number, 'upload' | 'url'>>({});
+  const [slideUrlInputs, setSlideUrlInputs] = useState<Record<number, string>>({});
 
   useEffect(() => {
     const token = getToken();
@@ -203,23 +207,47 @@ export default function AdminSettingsPage() {
 
           {slide.type === 'image' && (
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Background Image</label>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                <label className="form-label" style={{ marginBottom: 0 }}>Background Image</label>
+                <div style={{ display: 'flex', gap: 4 }}>
+                  <button type="button" className={`ed-tb-btn${(slideImageModes[idx] ?? 'upload') === 'upload' ? ' active' : ''}`} style={{ fontSize: 11, padding: '2px 8px' }}
+                    onClick={() => setSlideImageModes(m => ({ ...m, [idx]: 'upload' }))}>Upload</button>
+                  <button type="button" className={`ed-tb-btn${slideImageModes[idx] === 'url' ? ' active' : ''}`} style={{ fontSize: 11, padding: '2px 8px' }}
+                    onClick={() => setSlideImageModes(m => ({ ...m, [idx]: 'url' }))}>URL</button>
+                </div>
+              </div>
               {slide.imageUrl && (
                 <img src={slide.imageUrl} alt="slide" style={{ width: '100%', maxHeight: 120, objectFit: 'cover', borderRadius: 6, marginBottom: 8 }} />
               )}
-              <div
-                className="uzone"
-                onClick={() => slideImageRefs.current[idx]?.click()}
-              >
-                {slide.imageUrl ? 'Click to replace image' : 'Click to upload image'}
-              </div>
-              <input
-                ref={el => { slideImageRefs.current[idx] = el; }}
-                type="file"
-                accept="image/*"
-                style={{ display: 'none' }}
-                onChange={e => { const f = e.target.files?.[0]; if (f) handleSlideImageUpload(idx, f); e.target.value = ''; }}
-              />
+              {(slideImageModes[idx] ?? 'upload') === 'upload' ? (
+                <>
+                  <div className="uzone" onClick={() => slideImageRefs.current[idx]?.click()}>
+                    {slide.imageUrl ? 'Click to replace image' : 'Click to upload image'}
+                  </div>
+                  <input
+                    ref={el => { slideImageRefs.current[idx] = el; }}
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={e => { const f = e.target.files?.[0]; if (f) handleSlideImageUpload(idx, f); e.target.value = ''; }}
+                  />
+                </>
+              ) : (
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <input
+                    className="form-input"
+                    type="url"
+                    placeholder="https://example.com/image.jpg"
+                    value={slideUrlInputs[idx] ?? slide.imageUrl ?? ''}
+                    onChange={e => setSlideUrlInputs(s => ({ ...s, [idx]: e.target.value }))}
+                    style={{ flex: 1 }}
+                  />
+                  <button type="button" className="btn btn-secondary" style={{ fontSize: 12, padding: '4px 12px', whiteSpace: 'nowrap' }}
+                    onClick={() => { const u = slideUrlInputs[idx]?.trim(); if (u) updateSlide(idx, { imageUrl: u }); }}>
+                    Apply
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

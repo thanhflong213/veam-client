@@ -23,6 +23,13 @@ export interface Announcement {
   updatedAt?: string;
 }
 
+export interface NavItem {
+  label: string;
+  href?: string;
+  enabled: boolean;
+  children?: NavItem[];
+}
+
 export interface HeroSlide {
   type: string;
   badge?: string;
@@ -52,6 +59,8 @@ export interface Settings {
   siteName: string;
   activeTheme: 'modern' | 'classic';
   heroSlides: HeroSlide[];
+  navItems?: NavItem[];
+  featuredAnnouncements?: string[];
   socialLinks?: SocialLinks;
   contactInfo?: ContactInfo;
 }

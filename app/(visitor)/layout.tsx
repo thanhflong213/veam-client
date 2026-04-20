@@ -23,7 +23,7 @@ export default async function VisitorLayout({ children }: { children: React.Reac
           <span>🕐 8:00AM – 6:00PM</span>
         </div>
       </div>
-      <Header siteName={settings.siteName} pages={pages} />
+      <Header siteName={settings.siteName} pages={pages} navItems={settings.navItems ?? []} />
       <main style={{ minHeight: 'calc(100vh - 68px - 110px)' }}>{children}</main>
       <Footer siteName={settings.siteName} pages={pages} />
     </ThemeProvider>

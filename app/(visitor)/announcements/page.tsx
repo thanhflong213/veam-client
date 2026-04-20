@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getAnnouncements, getPages } from '../../lib/api';
+import { getAnnouncements, getPages, getSettings } from '../../lib/api';
 import type { Announcement, Page } from '../../lib/types';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Announcements – VEAM',
@@ -21,15 +23,25 @@ function formatDate(dateStr?: string) {
 export default async function AnnouncementsPage() {
   let announcements: Announcement[] = [];
   let pages: Page[] = [];
+  let featuredIds: string[] = [];
 
   try {
-    const res = await getAnnouncements({ status: 'published', limit: 50 });
+    const res = await getAnnouncements({ limit: 50 });
     announcements = res.items || [];
   } catch { /* ignore */ }
 
   try {
     pages = (await getPages()).filter(p => p.status === 'published');
   } catch { /* ignore */ }
+
+  try {
+    const settings = await getSettings();
+    featuredIds = settings.featuredAnnouncements ?? [];
+  } catch { /* ignore */ }
+
+  const featuredItems = featuredIds.length > 0
+    ? announcements.filter(a => featuredIds.includes(a._id))
+    : [];
 
   return (
     <div className="page-body">
@@ -75,11 +87,19 @@ export default async function AnnouncementsPage() {
         </div>
         <div className="sidebar-widget">
           <h3>Paper Archives</h3>
-          <ul>
-            {['2025','2024','2023','2022','2019'].map(y => (
-              <li key={y}><a>Conference papers – {y}</a></li>
-            ))}
-          </ul>
+          {featuredItems.length > 0 ? (
+            <ul>
+              {featuredItems.map(a => (
+                <li key={a._id}>
+                  <Link href={`/announcements/${a.slug}`}>{a.title}</Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: 'var(--text-muted)' }}>
+              No featured papers yet.
+            </p>
+          )}
         </div>
       </aside>
     </div>

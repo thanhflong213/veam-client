@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { isLoggedIn, clearToken } from '../lib/auth';
@@ -59,6 +59,7 @@ const LOGOUT_ICON = (
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
     if (pathname !== '/admin/login' && !isLoggedIn()) {
@@ -88,14 +89,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         top: 0,
         zIndex: 300,
       }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <div style={{
-            width: 32, height: 32, background: 'rgba(184,151,58,.2)', borderRadius: 4,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: "'Playfair Display',serif", color: 'var(--gold)', fontSize: 12, fontWeight: 700,
-          }}>VEAM</div>
-          <span style={{ fontFamily: "'Playfair Display',serif", fontSize: 15, color: 'white' }}>Admin</span>
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <button
+            onClick={() => setSidebarOpen(o => !o)}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px',
+              color: 'rgba(255,255,255,.7)', fontSize: 18, lineHeight: 1, borderRadius: 4,
+              display: 'flex', flexDirection: 'column', gap: 3,
+            }}
+            title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+          >
+            <span style={{ display: 'block', width: 16, height: 2, background: 'currentColor', borderRadius: 1 }} />
+            <span style={{ display: 'block', width: 16, height: 2, background: 'currentColor', borderRadius: 1 }} />
+            <span style={{ display: 'block', width: 16, height: 2, background: 'currentColor', borderRadius: 1 }} />
+          </button>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+            <div style={{
+              width: 32, height: 32, background: 'rgba(184,151,58,.2)', borderRadius: 4,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: "'Playfair Display',serif", color: 'var(--gold)', fontSize: 12, fontWeight: 700,
+            }}>VEAM</div>
+            <span style={{ fontFamily: "'Playfair Display',serif", fontSize: 15, color: 'white' }}>Admin</span>
+          </Link>
+        </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <Link
             href="/"
@@ -131,7 +147,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </div>
 
-      <div className="admin-layout">
+      <div className={`admin-layout${sidebarOpen ? '' : ' sidebar-closed'}`}>
         {/* Sidebar */}
         <div className="admin-sidebar">
           <div style={{ padding: '0 20px 18px', borderBottom: '1px solid rgba(255,255,255,.08)', marginBottom: 8 }}>
