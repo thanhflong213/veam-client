@@ -6,11 +6,28 @@ export interface Page {
   seoTitle?: string;
   seoDescription?: string;
   status: 'draft' | 'published';
+  parent?: string | null;
+  disabled?: boolean;
+  children?: Page[];
   createdAt: string;
   updatedAt: string;
 }
 
 export interface Announcement {
+  _id: string;
+  title: string;
+  slug: string;
+  excerpt?: string;
+  contentHtml: string;
+  coverImage?: string;
+  status: 'draft' | 'published';
+  publishedAt?: string;
+  recommend?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Institution {
   _id: string;
   title: string;
   slug: string;

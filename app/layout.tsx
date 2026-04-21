@@ -1,12 +1,17 @@
-import type { Metadata } from 'next';
-import './globals.css';
+import type { Metadata } from "next";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: 'VEAM – Vietnam Economists Annual Meeting',
-  description: 'Vietnam Economists Annual Meeting – annual conference for economists and social researchers.',
+  title: "VEAM – Vietnam Economists Annual Meeting",
+  description:
+    "Vietnam Economists Annual Meeting – annual conference for economists and social researchers.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <head>

@@ -23,12 +23,12 @@ import TableHeader from "@tiptap/extension-table-header";
 import Highlight from "@tiptap/extension-highlight";
 import { showToast } from "./Toast";
 import {
-  adminCreateAnnouncement,
-  adminUpdateAnnouncement,
+  adminCreateInstitution,
+  adminUpdateInstitution,
   adminUploadImage,
 } from "../../lib/api";
 import { getToken } from "../../lib/auth";
-import type { Announcement } from "../../lib/types";
+import type { Institution } from "../../lib/types";
 import { EditorToolbar } from "./EditorToolbar";
 
 const EXTENSIONS = [
@@ -50,45 +50,39 @@ const EXTENSIONS = [
 ];
 
 interface Props {
-  announcement?: Announcement;
+  institution?: Institution;
 }
 
-export default function AnnouncementEditor({ announcement }: Props) {
+export default function InstitutionEditor({ institution }: Props) {
   const router = useRouter();
-  const isNew = !announcement;
+  const isNew = !institution;
   const coverRef = useRef<HTMLInputElement>(null);
 
-  const [title, setTitle] = useState(announcement?.title ?? "");
-  const [slug, setSlug] = useState(announcement?.slug ?? "");
-  const [excerpt, setExcerpt] = useState(announcement?.excerpt ?? "");
-  const [coverImage, setCoverImage] = useState(announcement?.coverImage ?? "");
+  const [title, setTitle] = useState(institution?.title ?? "");
+  const [slug, setSlug] = useState(institution?.slug ?? "");
+  const [excerpt, setExcerpt] = useState(institution?.excerpt ?? "");
+  const [coverImage, setCoverImage] = useState(institution?.coverImage ?? "");
   const [publishedAt, setPublishedAt] = useState(
-    announcement?.publishedAt ? announcement.publishedAt.slice(0, 10) : "",
+    institution?.publishedAt ? institution.publishedAt.slice(0, 10) : "",
   );
-  const [recommend, setRecommend] = useState(announcement?.recommend ?? false);
   const [saving, setSaving] = useState(false);
   const [coverMode, setCoverMode] = useState<"upload" | "url">("upload");
-  const [coverUrlInput, setCoverUrlInput] = useState(
-    announcement?.coverImage ?? "",
-  );
+  const [coverUrlInput, setCoverUrlInput] = useState(institution?.coverImage ?? "");
 
   const editor = useEditor({
     immediatelyRender: false,
     extensions: EXTENSIONS,
-    content: announcement?.contentHtml ?? "",
+    content: institution?.contentHtml ?? "",
     editorProps: {
       attributes: {
         class: "ed-prose",
-        "data-placeholder": "Write your announcement here…",
+        "data-placeholder": "Write about this institution…",
       },
     },
   });
 
   function slugify(val: string) {
-    return val
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "");
+    return val.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
   }
 
   async function handleCoverUpload(file: File) {
@@ -109,20 +103,20 @@ export default function AnnouncementEditor({ announcement }: Props) {
     if (!token) return;
     setSaving(true);
     try {
-      const data: Partial<Announcement> = {
+      const data: Partial<Institution> = {
         title, slug, excerpt,
         contentHtml: editor?.getHTML() ?? "",
-        coverImage, status, recommend,
+        coverImage, status,
         publishedAt: publishedAt ? new Date(publishedAt).toISOString() : undefined,
       };
       if (isNew) {
-        await adminCreateAnnouncement(data, token);
-        showToast("Announcement created");
+        await adminCreateInstitution(data, token);
+        showToast("Institution created");
       } else {
-        await adminUpdateAnnouncement(announcement._id, data, token);
-        showToast("Announcement saved");
+        await adminUpdateInstitution(institution._id, data, token);
+        showToast("Institution saved");
       }
-      router.push("/admin/announcements");
+      router.push("/admin/institutions");
     } catch {
       showToast("Save failed");
       setSaving(false);
@@ -132,14 +126,11 @@ export default function AnnouncementEditor({ announcement }: Props) {
   return (
     <div className="ep2-layout">
       <div className="ep2-header">
-        <Link href="/admin/announcements" className="ep2-back">← Back</Link>
-        <span className="ep2-title">
-          {isNew ? "New Announcement" : title || "Edit Announcement"}
-        </span>
+        <Link href="/admin/institutions" className="ep2-back">← Back</Link>
+        <span className="ep2-title">{isNew ? "New Institution" : title || "Edit Institution"}</span>
         <div className="ep2-actions">
-          <button className="btn btn-secondary" style={{ fontSize: 12, padding: "6px 14px" }} onClick={() => save("draft")} disabled={saving}>
-            Save Draft
-          </button>
+          <button className="btn btn-secondary" style={{ fontSize: 12, padding: "6px 14px" }}
+            onClick={() => save("draft")} disabled={saving}>Save Draft</button>
           <button className="btn btn-primary" onClick={() => save("published")} disabled={saving}>
             {saving ? "Saving…" : "✓ Publish"}
           </button>
@@ -159,11 +150,8 @@ export default function AnnouncementEditor({ announcement }: Props) {
           <div className="ep2-fields">
             <div className="form-group">
               <label className="form-label">Title</label>
-              <input
-                className="form-input" type="text" placeholder="Announcement title"
-                value={title}
-                onChange={(e) => { setTitle(e.target.value); if (isNew) setSlug(slugify(e.target.value)); }}
-              />
+              <input className="form-input" type="text" placeholder="Institution name" value={title}
+                onChange={(e) => { setTitle(e.target.value); if (isNew) setSlug(slugify(e.target.value)); }} />
             </div>
             <div className="form-group">
               <label className="form-label">Slug</label>
@@ -174,13 +162,6 @@ export default function AnnouncementEditor({ announcement }: Props) {
               <label className="form-label">Published Date</label>
               <input className="form-input" type="date" value={publishedAt}
                 onChange={(e) => setPublishedAt(e.target.value)} />
-            </div>
-            <div className="form-group">
-              <label className="form-label" style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
-                <input type="checkbox" checked={recommend} onChange={(e) => setRecommend(e.target.checked)}
-                  style={{ width: 15, height: 15, accentColor: "var(--gold)", cursor: "pointer" }} />
-                Feature in Paper Archives
-              </label>
             </div>
             <div className="form-group">
               <label className="form-label">Excerpt</label>
@@ -197,10 +178,9 @@ export default function AnnouncementEditor({ announcement }: Props) {
                     style={{ fontSize: 11, padding: "2px 8px" }} onClick={() => setCoverMode("url")}>URL</button>
                 </div>
               </div>
-              {coverImage && (
-                <img src={coverImage} alt="cover"
-                  style={{ width: "100%", maxHeight: 100, objectFit: "cover", borderRadius: 6, marginBottom: 8 }} />
-              )}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {coverImage && <img src={coverImage} alt="cover"
+                style={{ width: "100%", maxHeight: 100, objectFit: "cover", borderRadius: 6, marginBottom: 8 }} />}
               {coverMode === "upload" ? (
                 <>
                   <div className="uzone" onClick={() => coverRef.current?.click()}>
@@ -215,9 +195,7 @@ export default function AnnouncementEditor({ announcement }: Props) {
                     value={coverUrlInput} onChange={(e) => setCoverUrlInput(e.target.value)} style={{ flex: 1 }} />
                   <button type="button" className="btn btn-secondary"
                     style={{ fontSize: 12, padding: "4px 12px", whiteSpace: "nowrap" }}
-                    onClick={() => { if (coverUrlInput.trim()) setCoverImage(coverUrlInput.trim()); }}>
-                    Apply
-                  </button>
+                    onClick={() => { if (coverUrlInput.trim()) setCoverImage(coverUrlInput.trim()); }}>Apply</button>
                 </div>
               )}
             </div>

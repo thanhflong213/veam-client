@@ -1,11 +1,17 @@
-import { getSettings } from '../lib/api';
-import HeroSlider from './components/HeroSlider';
+import { getSettings } from "../lib/api";
+import HeroSlider from "./components/HeroSlider";
 
 export default async function HomePage() {
-  let settings: import('../lib/types').Settings = { siteName: 'VEAM', activeTheme: 'modern', heroSlides: [] };
+  let settings: import("../lib/types").Settings = {
+    siteName: "VEAM",
+    activeTheme: "modern",
+    heroSlides: [],
+  };
   try {
     settings = await getSettings();
-  } catch { /* use defaults */ }
+  } catch {
+    /* use defaults */
+  }
 
   return (
     <>
@@ -15,29 +21,44 @@ export default async function HomePage() {
         <div className="home-strip">
           <div className="inner">
             <div className="strip-item">
-              <div><span className="si-label">Conference Date</span><span className="si-val">July 13–14, 2026</span></div>
+              <div>
+                <span className="si-label">Conference Date</span>
+                <span className="si-val">July 13–14, 2026</span>
+              </div>
             </div>
             <div className="strip-divider" />
             <div className="strip-item">
-              <div><span className="si-label">Location</span><span className="si-val">Hue, Vietnam</span></div>
+              <div>
+                <span className="si-label">Location</span>
+                <span className="si-val">Hue, Vietnam</span>
+              </div>
             </div>
             <div className="strip-divider" />
             <div className="strip-item">
-              <div><span className="si-label">Paper Deadline</span><span className="si-val">May 31, 2026</span></div>
+              <div>
+                <span className="si-label">Paper Deadline</span>
+                <span className="si-val">May 31, 2026</span>
+              </div>
             </div>
             <div className="strip-divider" />
             <div className="strip-item">
-              <div><span className="si-label">Notification</span><span className="si-val">June 15, 2026</span></div>
+              <div>
+                <span className="si-label">Notification</span>
+                <span className="si-val">June 15, 2026</span>
+              </div>
             </div>
             <div className="strip-divider" />
             <div className="strip-item">
-              <div><span className="si-label">Registration</span><span className="si-val">June 16–30, 2026</span></div>
+              <div>
+                <span className="si-label">Registration</span>
+                <span className="si-val">June 16–30, 2026</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Keynote Speakers */}
+      <div className="min-h-[500px]"></div>
+      {/*       
       <div className="home-section" style={{ background: 'white', borderBottom: '1px solid var(--border)' }}>
         <div className="inner">
           <div className="section-head">
@@ -70,7 +91,6 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* Timeline + ISVE Sessions */}
       <div className="home-section" style={{ background: 'var(--cream)' }}>
         <div className="inner" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48 }}>
           <div>
@@ -118,7 +138,6 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* Publication Opportunities */}
       <div className="home-section" style={{ background: 'white', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
         <div className="inner">
           <div className="section-head">
@@ -141,7 +160,6 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* Organizing Institutions */}
       <div className="home-section">
         <div className="inner">
           <div className="section-head">
@@ -164,7 +182,7 @@ export default async function HomePage() {
             ))}
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }

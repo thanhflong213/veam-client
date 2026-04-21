@@ -42,14 +42,19 @@ const EXTENSIONS = [
 
 interface Props {
   page?: Page;
+  allPages?: Page[];
 }
 
-export default function PageEditor({ page }: Props) {
+export default function PageEditor({ page, allPages = [] }: Props) {
   const router = useRouter();
   const isNew = !page;
 
   const [title, setTitle] = useState(page?.title ?? "");
   const [slug, setSlug] = useState(page?.slug ?? "");
+  const [parentId, setParentId] = useState(
+    typeof page?.parent === "string" ? page.parent : (page?.parent as unknown as { _id?: string })?._id ?? ""
+  );
+  const [disabled, setDisabled] = useState(page?.disabled ?? false);
   const [seoTitle, setSeoTitle] = useState(page?.seoTitle ?? "");
   const [seoDesc, setSeoDesc] = useState(page?.seoDescription ?? "");
   const [saving, setSaving] = useState(false);
@@ -74,21 +79,28 @@ export default function PageEditor({ page }: Props) {
     if (!token) return;
     setSaving(true);
     try {
-      const data = { title, slug, contentHtml: editor?.getHTML() ?? "", seoTitle, seoDescription: seoDesc, status };
+      const data: Partial<Page> & { parent?: string | null; disabled?: boolean } = {
+        title, slug,
+        contentHtml: editor?.getHTML() ?? "",
+        seoTitle, seoDescription: seoDesc, status,
+        parent: parentId || null,
+        disabled,
+      };
       if (isNew) {
-        const created = await adminCreatePage(data, token);
+        await adminCreatePage(data, token);
         showToast("Page created");
-        router.push(`/admin/pages/${created._id}`);
       } else {
         await adminUpdatePage(page._id, data, token);
         showToast("Page saved");
       }
+      router.push("/admin/pages");
     } catch {
       showToast("Save failed");
-    } finally {
       setSaving(false);
     }
   }
+
+  const parentOptions = allPages.filter(p => p._id !== page?._id);
 
   return (
     <div className="ep2-layout">
@@ -96,13 +108,16 @@ export default function PageEditor({ page }: Props) {
         <Link href="/admin/pages" className="ep2-back">← Back</Link>
         <span className="ep2-title">{isNew ? "New Page" : title || "Edit Page"}</span>
         <div className="ep2-actions">
-          <button className="btn btn-secondary" style={{ fontSize: 12, padding: "6px 14px" }} onClick={() => save("draft")} disabled={saving}>
-            Save Draft
-          </button>
+          <button className="btn btn-secondary" style={{ fontSize: 12, padding: "6px 14px" }}
+            onClick={() => save("draft")} disabled={saving}>Save Draft</button>
           <button className="btn btn-primary" onClick={() => save("published")} disabled={saving}>
             {saving ? "Saving…" : "✓ Publish"}
           </button>
         </div>
+      </div>
+
+      <div className="ep2-toolbar-full">
+        <EditorToolbar editor={editor} />
       </div>
 
       <div className="ep2-columns">
@@ -111,50 +126,42 @@ export default function PageEditor({ page }: Props) {
         </div>
 
         <div className="ep2-sidebar">
-          <div className="ep2-toolbar-wrap">
-            <EditorToolbar editor={editor} />
-          </div>
           <div className="ep2-fields">
             <div className="form-group">
               <label className="form-label">Page Title</label>
-              <input
-                className="form-input"
-                type="text"
-                placeholder="Page title"
-                value={title}
-                onChange={e => { setTitle(e.target.value); if (isNew) setSlug(slugify(e.target.value)); }}
-              />
+              <input className="form-input" type="text" placeholder="Page title" value={title}
+                onChange={e => { setTitle(e.target.value); if (isNew) setSlug(slugify(e.target.value)); }} />
             </div>
             <div className="form-group">
               <label className="form-label">Slug (URL)</label>
-              <input
-                className="form-input"
-                type="text"
-                placeholder="page-slug"
-                value={slug}
-                onChange={e => setSlug(slugify(e.target.value))}
-              />
+              <input className="form-input" type="text" placeholder="page-slug" value={slug}
+                onChange={e => setSlug(slugify(e.target.value))} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Parent Page</label>
+              <select className="form-input" value={parentId} onChange={e => setParentId(e.target.value)}>
+                <option value="">— None (root level) —</option>
+                {parentOptions.map(p => (
+                  <option key={p._id} value={p._id}>{p.title}</option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label" style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                <input type="checkbox" checked={disabled} onChange={e => setDisabled(e.target.checked)}
+                  style={{ width: 15, height: 15, accentColor: "var(--gold)", cursor: "pointer" }} />
+                Non-navigable (group header)
+              </label>
             </div>
             <div className="form-group">
               <label className="form-label">SEO Title</label>
-              <input
-                className="form-input"
-                type="text"
-                placeholder="Optional SEO title"
-                value={seoTitle}
-                onChange={e => setSeoTitle(e.target.value)}
-              />
+              <input className="form-input" type="text" placeholder="Optional SEO title" value={seoTitle}
+                onChange={e => setSeoTitle(e.target.value)} />
             </div>
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label className="form-label">SEO Description</label>
-              <textarea
-                className="form-input"
-                rows={3}
-                placeholder="Optional meta description"
-                value={seoDesc}
-                onChange={e => setSeoDesc(e.target.value)}
-                style={{ resize: "vertical" }}
-              />
+              <textarea className="form-input" rows={3} placeholder="Optional meta description" value={seoDesc}
+                onChange={e => setSeoDesc(e.target.value)} style={{ resize: "vertical" }} />
             </div>
           </div>
         </div>

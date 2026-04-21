@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { adminGetSettings, adminUpdateSettings, adminUploadImage, adminGetAnnouncements } from '../../lib/api';
+import { adminGetSettings, adminUpdateSettings, adminUploadImage, adminGetAnnouncements, adminGetPages } from '../../lib/api';
 import { getToken } from '../../lib/auth';
 import { showToast } from '../components/Toast';
-import type { Announcement, HeroSlide, Settings } from '../../lib/types';
+import type { Announcement, HeroSlide, Page, Settings } from '../../lib/types';
 import { NavMenuEditor } from '../components/NavMenuEditor';
 
 export default function AdminSettingsPage() {
@@ -12,6 +12,7 @@ export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [allAnnouncements, setAllAnnouncements] = useState<Announcement[]>([]);
+  const [allPages, setAllPages] = useState<Page[]>([]);
   const slideImageRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [slideImageModes, setSlideImageModes] = useState<Record<number, 'upload' | 'url'>>({});
   const [slideUrlInputs, setSlideUrlInputs] = useState<Record<number, string>>({});
@@ -19,8 +20,16 @@ export default function AdminSettingsPage() {
   useEffect(() => {
     const token = getToken();
     if (!token) return;
-    adminGetSettings(token)
-      .then(setSettings)
+    Promise.all([
+      adminGetSettings(token),
+      adminGetAnnouncements(token).catch(() => ({ items: [], total: 0 })),
+      adminGetPages(token).catch(() => []),
+    ])
+      .then(([s, ann, pgs]) => {
+        setSettings(s);
+        setAllAnnouncements(ann.items ?? []);
+        setAllPages(Array.isArray(pgs) ? pgs : []);
+      })
       .catch(() => showToast('Failed to load settings'))
       .finally(() => setLoading(false));
   }, []);
@@ -258,6 +267,58 @@ export default function AdminSettingsPage() {
           No hero slides yet. Click &ldquo;Add Slide&rdquo; to add one.
         </div>
       )}
+
+      {/* ── Navigation Menu ── */}
+      <div className="a-hdr" style={{ marginTop: 8 }}>
+        <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: 18, color: 'var(--navy)' }}>Navigation Menu</h2>
+      </div>
+      <div className="a-card">
+        <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 12, color: 'var(--text-muted)', marginBottom: 12 }}>
+          Build multi-level nav. Leave <strong>Link</strong> blank to make an item a group header only. Toggle <strong>●/○</strong> to show/hide.
+        </p>
+        <NavMenuEditor
+          items={settings.navItems ?? []}
+          onChange={items => setSettings({ ...settings, navItems: items })}
+          pages={allPages}
+        />
+      </div>
+
+      {/* ── Featured Announcements (Paper Archives) ── */}
+      <div className="a-hdr" style={{ marginTop: 8 }}>
+        <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: 18, color: 'var(--navy)' }}>Paper Archives Sidebar</h2>
+      </div>
+      <div className="a-card">
+        <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 12, color: 'var(--text-muted)', marginBottom: 12 }}>
+          Check announcements to feature them in the &ldquo;Paper Archives&rdquo; widget on the announcements page.
+        </p>
+        {allAnnouncements.length === 0 ? (
+          <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: 'var(--text-muted)' }}>No announcements found.</p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {allAnnouncements.map(ann => {
+              const featured = (settings.featuredAnnouncements ?? []).includes(ann._id);
+              return (
+                <label key={ann._id} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', padding: '6px 10px', borderRadius: 6, background: featured ? 'var(--cream)' : 'transparent', border: `1px solid ${featured ? 'var(--navy)' : 'var(--border)'}`, transition: 'all .15s' }}>
+                  <input
+                    type="checkbox"
+                    checked={featured}
+                    style={{ accentColor: 'var(--navy)', width: 15, height: 15 }}
+                    onChange={() => {
+                      const cur = settings.featuredAnnouncements ?? [];
+                      const next = featured ? cur.filter(id => id !== ann._id) : [...cur, ann._id];
+                      setSettings({ ...settings, featuredAnnouncements: next });
+                    }}
+                  />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, fontWeight: 600, color: 'var(--navy)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ann.title}</div>
+                    <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 11, color: 'var(--text-muted)' }}>{ann.status} · {ann.slug}</div>
+                  </div>
+                </label>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </>
   );
 }

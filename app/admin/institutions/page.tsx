@@ -2,23 +2,23 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { adminGetAnnouncements, adminDeleteAnnouncement } from '../../lib/api';
+import { adminGetInstitutions, adminDeleteInstitution } from '../../lib/api';
 import { getToken } from '../../lib/auth';
 import { showToast } from '../components/Toast';
-import type { Announcement } from '../../lib/types';
+import type { Institution } from '../../lib/types';
 
-export default function AdminAnnouncementsPage() {
-  const [items, setItems] = useState<Announcement[]>([]);
+export default function AdminInstitutionsPage() {
+  const [items, setItems] = useState<Institution[]>([]);
   const [loading, setLoading] = useState(true);
 
   async function load() {
     const token = getToken();
     if (!token) return;
     try {
-      const res = await adminGetAnnouncements(token);
+      const res = await adminGetInstitutions(token);
       setItems(res.items || []);
     } catch {
-      showToast('Failed to load announcements');
+      showToast('Failed to load institutions');
     } finally {
       setLoading(false);
     }
@@ -31,8 +31,8 @@ export default function AdminAnnouncementsPage() {
     const token = getToken();
     if (!token) return;
     try {
-      await adminDeleteAnnouncement(id, token);
-      showToast('Announcement deleted');
+      await adminDeleteInstitution(id, token);
+      showToast('Institution deleted');
       load();
     } catch {
       showToast('Delete failed');
@@ -42,8 +42,8 @@ export default function AdminAnnouncementsPage() {
   return (
     <>
       <div className="a-hdr">
-        <h2>Announcements</h2>
-        <Link href="/admin/announcements/new" className="btn btn-primary">+ New Announcement</Link>
+        <h2>Institutions</h2>
+        <Link href="/admin/institutions/new" className="btn btn-primary">+ New Institution</Link>
       </div>
       {loading ? (
         <div style={{ fontFamily: "'DM Sans',sans-serif", color: 'var(--text-muted)', padding: 20 }}>Loading…</div>
@@ -55,27 +55,25 @@ export default function AdminAnnouncementsPage() {
                 <th>Title</th>
                 <th>Slug</th>
                 <th>Status</th>
-                <th>Featured</th>
                 <th>Published</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {items.length === 0 ? (
-                <tr><td colSpan={6} style={{ color: 'var(--text-muted)', textAlign: 'center' }}>No announcements yet.</td></tr>
-              ) : items.map(a => (
-                <tr key={a._id}>
-                  <td style={{ fontWeight: 600, color: 'var(--navy)' }}>{a.title}</td>
-                  <td style={{ color: 'var(--text-muted)' }}>/{a.slug}</td>
-                  <td><span className={`badge badge-${a.status}`}>{a.status}</span></td>
-                  <td style={{ textAlign: 'center' }}>{a.recommend ? <span className="badge badge-published">Yes</span> : <span style={{ color: 'var(--text-muted)' }}>—</span>}</td>
+                <tr><td colSpan={5} style={{ color: 'var(--text-muted)', textAlign: 'center' }}>No institutions yet.</td></tr>
+              ) : items.map(inst => (
+                <tr key={inst._id}>
+                  <td style={{ fontWeight: 600, color: 'var(--navy)' }}>{inst.title}</td>
+                  <td style={{ color: 'var(--text-muted)' }}>/{inst.slug}</td>
+                  <td><span className={`badge badge-${inst.status}`}>{inst.status}</span></td>
                   <td style={{ color: 'var(--text-muted)' }}>
-                    {a.publishedAt ? new Date(a.publishedAt).toLocaleDateString() : '—'}
+                    {inst.publishedAt ? new Date(inst.publishedAt).toLocaleDateString() : '—'}
                   </td>
                   <td>
                     <div style={{ display: 'flex', gap: 6 }}>
-                      <Link href={`/admin/announcements/${a._id}`} className="btn btn-secondary" style={{ fontSize: 12, padding: '5px 10px' }}>Edit</Link>
-                      <button className="btn btn-danger" style={{ fontSize: 12, padding: '5px 10px' }} onClick={() => handleDelete(a._id, a.title)}>Delete</button>
+                      <Link href={`/admin/institutions/${inst._id}`} className="btn btn-secondary" style={{ fontSize: 12, padding: '5px 10px' }}>Edit</Link>
+                      <button className="btn btn-danger" style={{ fontSize: 12, padding: '5px 10px' }} onClick={() => handleDelete(inst._id, inst.title)}>Delete</button>
                     </div>
                   </td>
                 </tr>

@@ -1,4 +1,4 @@
-import type { Page, Announcement, Settings } from './types';
+import type { Page, Announcement, Institution, Settings } from './types';
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -154,7 +154,7 @@ export function adminUpdateSettings(data: Partial<Settings>, token: string): Pro
 export async function adminUploadImage(file: File, token: string): Promise<{ url: string }> {
   const form = new FormData();
   form.append('file', file);
-  const res = await fetch(`${BASE}/uploads/image`, {
+  const res = await fetch(`${BASE}/uploads`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
     body: form,
@@ -162,4 +162,59 @@ export async function adminUploadImage(file: File, token: string): Promise<{ url
   if (!res.ok) throw new Error('Upload failed');
   const json = await res.json();
   return 'data' in json ? json.data : json;
+}
+
+export interface InstitutionsResponse {
+  items: Institution[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface InstitutionsParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
+export function getInstitutions(params?: InstitutionsParams): Promise<InstitutionsResponse> {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.limit) q.set('limit', String(params.limit));
+  if (params?.search) q.set('search', params.search);
+  return apiFetch<InstitutionsResponse>(`/institutions${q.toString() ? '?' + q : ''}`);
+}
+
+export function adminGetInstitutions(token: string): Promise<InstitutionsResponse> {
+  return apiFetch<InstitutionsResponse>('/institutions/manage?limit=100', { headers: authHeaders(token) });
+}
+
+export async function adminGetInstitution(id: string, token: string): Promise<Institution> {
+  const res = await apiFetch<InstitutionsResponse>('/institutions/manage?limit=100', { headers: authHeaders(token) });
+  const item = res.items?.find(i => i._id === id);
+  if (!item) throw new Error('Institution not found');
+  return item;
+}
+
+export function adminCreateInstitution(data: Partial<Institution>, token: string): Promise<Institution> {
+  return apiFetch<Institution>('/institutions', {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: JSON.stringify(data),
+  });
+}
+
+export function adminUpdateInstitution(id: string, data: Partial<Institution>, token: string): Promise<Institution> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { slug: _slug, ...rest } = data as Record<string, unknown>;
+  return apiFetch<Institution>(`/institutions/${id}`, {
+    method: 'PATCH',
+    headers: authHeaders(token),
+    body: JSON.stringify(rest),
+  });
+}
+
+export function adminDeleteInstitution(id: string, token: string): Promise<void> {
+  return apiFetch<void>(`/institutions/${id}`, { method: 'DELETE', headers: authHeaders(token) });
 }
