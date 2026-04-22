@@ -180,6 +180,10 @@ export function getInstitutions(params?: InstitutionsParams): Promise<Institutio
   return apiFetch<InstitutionsResponse>(`/institutions${q.toString() ? '?' + q : ''}`);
 }
 
+export function getInstitution(slug: string): Promise<Institution> {
+  return apiFetch<Institution>(`/institutions/${slug}`);
+}
+
 export function adminGetInstitutions(token: string): Promise<InstitutionsResponse> {
   return apiFetch<InstitutionsResponse>('/institutions/manage?limit=100', { headers: authHeaders(token) });
 }

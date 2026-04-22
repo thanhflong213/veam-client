@@ -36,7 +36,6 @@ export default async function AnnouncementDetailPage({ params }: Props) {
         day: "numeric",
       })
     : null;
-
   return (
     <div className="page-body">
       <article>
@@ -72,7 +71,7 @@ export default async function AnnouncementDetailPage({ params }: Props) {
         </div>
         <div
           className="rc"
-          dangerouslySetInnerHTML={{ __html: ann.contentHtml }}
+          dangerouslySetInnerHTML={{ __html: ann.contentHtml ?? "" }}
         />
       </article>
       <VisitorSidebar />
