@@ -21,6 +21,12 @@ import TableRow from "@tiptap/extension-table-row";
 import TableCell from "@tiptap/extension-table-cell";
 import TableHeader from "@tiptap/extension-table-header";
 import Highlight from "@tiptap/extension-highlight";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowLeft,
+  faArrowUpRightFromSquare,
+  faCheck,
+} from "@fortawesome/free-solid-svg-icons";
 import { showToast } from "./Toast";
 import {
   adminCreateInstitution,
@@ -30,6 +36,10 @@ import {
 import { getToken } from "../../lib/auth";
 import type { Institution } from "../../lib/types";
 import { EditorToolbar } from "./EditorToolbar";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 const EXTENSIONS = [
   StarterKit,
@@ -67,12 +77,17 @@ export default function InstitutionEditor({ institution }: Props) {
   );
   const [saving, setSaving] = useState(false);
   const [coverMode, setCoverMode] = useState<"upload" | "url">("upload");
-  const [coverUrlInput, setCoverUrlInput] = useState(institution?.coverImage ?? "");
+  const [coverUrlInput, setCoverUrlInput] = useState(
+    institution?.coverImage ?? "",
+  );
+  const [, forceUpdate] = useState(0);
 
   const editor = useEditor({
     immediatelyRender: false,
     extensions: EXTENSIONS,
     content: institution?.contentHtml ?? "",
+    onUpdate: () => forceUpdate((n) => n + 1),
+    onSelectionUpdate: () => forceUpdate((n) => n + 1),
     editorProps: {
       attributes: {
         class: "ed-prose",
@@ -82,7 +97,10 @@ export default function InstitutionEditor({ institution }: Props) {
   });
 
   function slugify(val: string) {
-    return val.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    return val
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
   }
 
   async function handleCoverUpload(file: File) {
@@ -97,17 +115,28 @@ export default function InstitutionEditor({ institution }: Props) {
   }
 
   async function save(status: "draft" | "published") {
-    if (!title.trim()) { showToast("Title is required"); return; }
-    if (!slug.trim()) { showToast("Slug is required"); return; }
+    if (!title.trim()) {
+      showToast("Title is required");
+      return;
+    }
+    if (!slug.trim()) {
+      showToast("Slug is required");
+      return;
+    }
     const token = getToken();
     if (!token) return;
     setSaving(true);
     try {
       const data: Partial<Institution> = {
-        title, slug, excerpt,
+        title,
+        slug,
+        excerpt,
         contentHtml: editor?.getHTML() ?? "",
-        coverImage, status,
-        publishedAt: publishedAt ? new Date(publishedAt).toISOString() : undefined,
+        coverImage,
+        status,
+        publishedAt: publishedAt
+          ? new Date(publishedAt).toISOString()
+          : undefined,
       };
       if (isNew) {
         await adminCreateInstitution(data, token);
@@ -126,14 +155,54 @@ export default function InstitutionEditor({ institution }: Props) {
   return (
     <div className="ep2-layout">
       <div className="ep2-header">
-        <Link href="/admin/institutions" className="ep2-back">← Back</Link>
-        <span className="ep2-title">{isNew ? "New Institution" : title || "Edit Institution"}</span>
+        <Link
+          href="/admin/institutions"
+          className={cn(
+            buttonVariants({ variant: "ghost", size: "sm" }),
+            "ep2-back",
+          )}
+        >
+          <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 11 }} /> Back
+        </Link>
+        <span className="ep2-title">
+          {isNew ? "New Institution" : title || "Edit Institution"}
+        </span>
         <div className="ep2-actions">
-          <button className="btn btn-secondary" style={{ fontSize: 12, padding: "6px 14px" }}
-            onClick={() => save("draft")} disabled={saving}>Save Draft</button>
-          <button className="btn btn-primary" onClick={() => save("published")} disabled={saving}>
-            {saving ? "Saving…" : "✓ Publish"}
-          </button>
+          {slug && (
+            <a
+              href={`/institutions/${slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                buttonVariants({ variant: "outline", size: "sm" }),
+                "gap-1.5",
+              )}
+            >
+              <FontAwesomeIcon icon={faArrowUpRightFromSquare} /> Preview
+            </a>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => save("draft")}
+            disabled={saving}
+          >
+            Save Draft
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => save("published")}
+            disabled={saving}
+            className="gap-1.5"
+          >
+            {saving ? (
+              "Saving…"
+            ) : (
+              <>
+                <FontAwesomeIcon icon={faCheck} /> Publish
+              </>
+            )}
+          </Button>
         </div>
       </div>
 
@@ -149,53 +218,133 @@ export default function InstitutionEditor({ institution }: Props) {
         <div className="ep2-sidebar">
           <div className="ep2-fields">
             <div className="form-group">
-              <label className="form-label">Title</label>
-              <input className="form-input" type="text" placeholder="Institution name" value={title}
-                onChange={(e) => { setTitle(e.target.value); if (isNew) setSlug(slugify(e.target.value)); }} />
+              <Label htmlFor="inst-title">Title</Label>
+              <Input
+                id="inst-title"
+                type="text"
+                placeholder="Institution name"
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  if (isNew) setSlug(slugify(e.target.value));
+                }}
+              />
             </div>
             <div className="form-group">
-              <label className="form-label">Slug</label>
-              <input className="form-input" type="text" placeholder="url-slug" value={slug}
-                onChange={(e) => setSlug(slugify(e.target.value))} />
+              <Label htmlFor="inst-slug">Slug</Label>
+              <Input
+                id="inst-slug"
+                type="text"
+                placeholder="url-slug"
+                value={slug}
+                onChange={(e) => setSlug(slugify(e.target.value))}
+              />
             </div>
             <div className="form-group">
-              <label className="form-label">Published Date</label>
-              <input className="form-input" type="date" value={publishedAt}
-                onChange={(e) => setPublishedAt(e.target.value)} />
+              <Label htmlFor="inst-date">Published Date</Label>
+              <Input
+                id="inst-date"
+                type="date"
+                value={publishedAt}
+                onChange={(e) => setPublishedAt(e.target.value)}
+              />
             </div>
             <div className="form-group">
-              <label className="form-label">Excerpt</label>
-              <textarea className="form-input" rows={3} placeholder="Short description shown in list view"
-                value={excerpt} onChange={(e) => setExcerpt(e.target.value)} style={{ resize: "vertical" }} />
+              <Label htmlFor="inst-excerpt">Excerpt</Label>
+              <textarea
+                id="inst-excerpt"
+                className="form-input"
+                rows={3}
+                placeholder="Short description shown in list view"
+                value={excerpt}
+                onChange={(e) => setExcerpt(e.target.value)}
+                style={{ resize: "vertical" }}
+              />
             </div>
             <div className="form-group" style={{ marginBottom: 0 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                <label className="form-label" style={{ marginBottom: 0 }}>Cover Image</label>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: 6,
+                }}
+              >
+                <Label style={{ marginBottom: 0 }}>Cover Image</Label>
                 <div style={{ display: "flex", gap: 4 }}>
-                  <button type="button" className={`ed-tb-btn${coverMode === "upload" ? " active" : ""}`}
-                    style={{ fontSize: 11, padding: "2px 8px" }} onClick={() => setCoverMode("upload")}>Upload</button>
-                  <button type="button" className={`ed-tb-btn${coverMode === "url" ? " active" : ""}`}
-                    style={{ fontSize: 11, padding: "2px 8px" }} onClick={() => setCoverMode("url")}>URL</button>
+                  <Button
+                    type="button"
+                    variant={coverMode === "upload" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCoverMode("upload")}
+                  >
+                    Upload
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={coverMode === "url" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCoverMode("url")}
+                  >
+                    URL
+                  </Button>
                 </div>
               </div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              {coverImage && <img src={coverImage} alt="cover"
-                style={{ width: "100%", maxHeight: 100, objectFit: "cover", borderRadius: 6, marginBottom: 8 }} />}
+              {coverImage && (
+                <img
+                  src={coverImage}
+                  alt="cover"
+                  style={{
+                    width: "100%",
+                    maxHeight: 100,
+                    objectFit: "cover",
+                    borderRadius: 6,
+                    marginBottom: 8,
+                  }}
+                />
+              )}
               {coverMode === "upload" ? (
                 <>
-                  <div className="uzone" onClick={() => coverRef.current?.click()}>
-                    {coverImage ? "Click to replace" : "Click to upload cover image"}
+                  <div
+                    className="uzone"
+                    onClick={() => coverRef.current?.click()}
+                  >
+                    {coverImage
+                      ? "Click to replace"
+                      : "Click to upload cover image"}
                   </div>
-                  <input ref={coverRef} type="file" accept="image/*" style={{ display: "none" }}
-                    onChange={(e) => { const f = e.target.files?.[0]; if (f) handleCoverUpload(f); e.target.value = ""; }} />
+                  <input
+                    ref={coverRef}
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) handleCoverUpload(f);
+                      e.target.value = "";
+                    }}
+                  />
                 </>
               ) : (
                 <div style={{ display: "flex", gap: 6 }}>
-                  <input className="form-input" type="url" placeholder="https://example.com/image.jpg"
-                    value={coverUrlInput} onChange={(e) => setCoverUrlInput(e.target.value)} style={{ flex: 1 }} />
-                  <button type="button" className="btn btn-secondary"
-                    style={{ fontSize: 12, padding: "4px 12px", whiteSpace: "nowrap" }}
-                    onClick={() => { if (coverUrlInput.trim()) setCoverImage(coverUrlInput.trim()); }}>Apply</button>
+                  <Input
+                    type="url"
+                    placeholder="https://example.com/image.jpg"
+                    value={coverUrlInput}
+                    onChange={(e) => setCoverUrlInput(e.target.value)}
+                    style={{ flex: 1 }}
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      if (coverUrlInput.trim())
+                        setCoverImage(coverUrlInput.trim());
+                    }}
+                  >
+                    Apply
+                  </Button>
                 </div>
               )}
             </div>

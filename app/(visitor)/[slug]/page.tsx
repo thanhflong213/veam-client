@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { getPage, getPages } from '../../lib/api';
-import Link from 'next/link';
+import { getPage } from '../../lib/api';
+import VisitorSidebar from '../components/VisitorSidebar';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -11,10 +11,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   try {
     const page = await getPage(slug);
-    return {
-      title: page.seoTitle || page.title,
-      description: page.seoDescription,
-    };
+    return { title: page.seoTitle || page.title, description: page.seoDescription };
   } catch {
     return {};
   }
@@ -29,11 +26,6 @@ export default async function SlugPage({ params }: Props) {
     notFound();
   }
 
-  let allPages: import('../../lib/types').Page[] = [];
-  try {
-    allPages = (await getPages()).filter((p) => p.status === 'published' && p.slug !== slug);
-  } catch { /* ignore */ }
-
   return (
     <div className="page-body">
       <article>
@@ -42,17 +34,7 @@ export default async function SlugPage({ params }: Props) {
         </h1>
         <div className="rc" dangerouslySetInnerHTML={{ __html: page.contentHtml }} />
       </article>
-      <aside>
-        <div className="sidebar-widget">
-          <h3>Quick Links</h3>
-          <ul>
-            {allPages.map((p: import('../../lib/types').Page) => (
-              <li key={p._id}><Link href={`/${p.slug}`}>{p.title}</Link></li>
-            ))}
-            <li><Link href="/announcements">Announcements</Link></li>
-          </ul>
-        </div>
-      </aside>
+      <VisitorSidebar />
     </div>
   );
 }

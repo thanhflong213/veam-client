@@ -1,47 +1,64 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import { getAnnouncements, getPages } from '../../lib/api';
-import type { Announcement, Page } from '../../lib/types';
+import type { Metadata } from "next";
+import Link from "next/link";
+import { getAnnouncements } from "../../lib/api";
+import type { Announcement } from "../../lib/types";
+import VisitorSidebar from "../components/VisitorSidebar";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: 'Announcements – VEAM',
-  description: 'Latest news, calls for papers, and conference updates from VEAM.',
+  title: "Announcements – VEAM",
+  description:
+    "Latest news, calls for papers, and conference updates from VEAM.",
 };
 
 function formatDate(dateStr?: string) {
-  if (!dateStr) return '';
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    year: 'numeric', month: 'long', day: 'numeric',
-  }).toUpperCase();
+  if (!dateStr) return "";
+  return new Date(dateStr)
+    .toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
+    .toUpperCase();
 }
 
 interface Props {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; page?: string }>;
 }
 
 export default async function AnnouncementsPage({ searchParams }: Props) {
-  const { q } = await searchParams;
-  const searchQuery = q?.trim() ?? '';
+  const { q, page: pageParam } = await searchParams;
+  const searchQuery = q?.trim() ?? "";
+  const currentPage = Math.max(1, Number(pageParam ?? 1));
+  const limit = 10;
 
   let announcements: Announcement[] = [];
-  let pages: Page[] = [];
-  let recommendedItems: Announcement[] = [];
+  let total = 0;
 
   try {
-    const res = await getAnnouncements({ limit: 50, search: searchQuery || undefined });
+    const res = await getAnnouncements({
+      page: currentPage,
+      limit,
+      search: searchQuery || undefined,
+    });
     announcements = res.items || [];
-  } catch { /* ignore */ }
+    total = res.total || 0;
+  } catch {
+    /* ignore */
+  }
 
-  try {
-    pages = (await getPages()).filter(p => p.status === 'published');
-  } catch { /* ignore */ }
+  const totalPages = Math.ceil(total / limit);
 
-  try {
-    const res = await getAnnouncements({ limit: 100 });
-    recommendedItems = (res.items || []).filter(a => a.recommend === true);
-  } catch { /* ignore */ }
+  function pageUrl(p: number) {
+    const params = new URLSearchParams();
+    if (p > 1) params.set("page", String(p));
+    if (searchQuery) params.set("q", searchQuery);
+    const qs = params.toString();
+    return `/announcements${qs ? "?" + qs : ""}`;
+  }
 
   return (
     <div className="page-body">
@@ -51,13 +68,34 @@ export default async function AnnouncementsPage({ searchParams }: Props) {
             <>
               <h2>Search Results</h2>
               <p>
-                {announcements.length > 0
-                  ? <>Showing <strong>{announcements.length}</strong> result{announcements.length !== 1 ? 's' : ''} for <strong>&ldquo;{searchQuery}&rdquo;</strong></>
-                  : <>No results found for <strong>&ldquo;{searchQuery}&rdquo;</strong></>
-                }
+                {total > 0 ? (
+                  <>
+                    Showing <strong>{total}</strong> result
+                    {total !== 1 ? "s" : ""} for{" "}
+                    <strong>&ldquo;{searchQuery}&rdquo;</strong>
+                  </>
+                ) : (
+                  <>
+                    No results found for{" "}
+                    <strong>&ldquo;{searchQuery}&rdquo;</strong>
+                  </>
+                )}
               </p>
-              <Link href="/announcements" style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: 'var(--gold)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
-                ← All announcements
+              <Link
+                href="/announcements"
+                style={{
+                  fontFamily: "'DM Sans',sans-serif",
+                  fontSize: 13,
+                  color: "var(--gold)",
+                  textDecoration: "none",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 4,
+                  marginTop: 4,
+                }}
+              >
+                <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 11 }} />{" "}
+                All announcements
               </Link>
             </>
           ) : (
@@ -69,57 +107,72 @@ export default async function AnnouncementsPage({ searchParams }: Props) {
         </div>
 
         {announcements.length === 0 ? (
-          <p style={{ fontFamily: "'DM Sans',sans-serif", color: 'var(--text-muted)', marginTop: 16 }}>
-            {searchQuery ? 'Try a different search term.' : 'No announcements yet.'}
+          <p
+            style={{
+              fontFamily: "'DM Sans',sans-serif",
+              color: "var(--text-muted)",
+              marginTop: 16,
+            }}
+          >
+            {searchQuery
+              ? "Try a different search term."
+              : "No announcements yet."}
           </p>
         ) : (
           <div className="content-card-list">
-            {announcements.map(ann => (
+            {announcements.map((ann) => (
               <div key={ann._id} className="content-card">
-                <Link href={`/announcements/${ann.slug}`} className="content-card-title">
+                <Link
+                  href={`/announcements/${ann.slug}`}
+                  className="content-card-title"
+                >
                   {ann.title}
                 </Link>
                 {ann.publishedAt && (
-                  <div className="content-card-date">⊙ {formatDate(ann.publishedAt)}</div>
+                  <div className="content-card-date">
+                    ⊙ {formatDate(ann.publishedAt)}
+                  </div>
                 )}
                 {ann.excerpt && (
                   <p className="content-card-excerpt">{ann.excerpt}</p>
                 )}
-                <Link href={`/announcements/${ann.slug}`} className="content-card-btn">
+                <Link
+                  href={`/announcements/${ann.slug}`}
+                  className="content-card-btn"
+                >
                   READ MORE →
                 </Link>
               </div>
             ))}
           </div>
         )}
+
+        {totalPages > 1 && (
+          <div className="pagination">
+            {currentPage > 1 && (
+              <Link href={pageUrl(currentPage - 1)} className="pg-btn">
+                <i className="fa-solid fa-chevron-left" />
+              </Link>
+            )}
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <Link
+                key={p}
+                href={pageUrl(p)}
+                className={`pg-btn${p === currentPage ? " active" : ""}`}
+              >
+                {p}
+              </Link>
+            ))}
+            {currentPage < totalPages && (
+              <Link href={pageUrl(currentPage + 1)} className="pg-btn">
+                <i className="fa-solid fa-chevron-right" />
+              </Link>
+            )}
+          </div>
+        )}
       </div>
 
-      <aside>
-        <div className="sidebar-widget">
-          <h3>Quick Links</h3>
-          <ul>
-            {pages.map(p => (
-              <li key={p._id}><Link href={`/${p.slug}`}>{p.title}</Link></li>
-            ))}
-          </ul>
-        </div>
-        <div className="sidebar-widget">
-          <h3>Paper Archives</h3>
-          {recommendedItems.length > 0 ? (
-            <ul>
-              {recommendedItems.map(a => (
-                <li key={a._id}>
-                  <Link href={`/announcements/${a.slug}`}>{a.title}</Link>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: 'var(--text-muted)' }}>
-              No featured papers yet.
-            </p>
-          )}
-        </div>
-      </aside>
+      <VisitorSidebar />
     </div>
   );
 }

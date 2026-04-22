@@ -6,6 +6,12 @@ import { getToken } from '../../lib/auth';
 import { showToast } from '../components/Toast';
 import type { Announcement, HeroSlide, Page, Settings } from '../../lib/types';
 import { NavMenuEditor } from '../components/NavMenuEditor';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFloppyDisk, faPlus, faChevronUp, faChevronDown, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<Settings | null>(null);
@@ -93,16 +99,16 @@ export default function AdminSettingsPage() {
     <>
       <div className="a-hdr">
         <h2>Settings</h2>
-        <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
-          {saving ? 'Saving…' : '💾 Save Settings'}
-        </button>
+        <Button onClick={handleSave} disabled={saving} size="sm" className="gap-1.5">
+          <FontAwesomeIcon icon={faFloppyDisk} /> {saving ? 'Saving…' : 'Save Settings'}
+        </Button>
       </div>
 
-      <div className="a-card">
+      <Card><CardContent className="pt-5">
         <div className="form-group">
-          <label className="form-label">Site Name</label>
-          <input
-            className="form-input"
+          <Label htmlFor="site-name">Site Name</Label>
+          <Input
+            id="site-name"
             type="text"
             value={settings.siteName}
             onChange={e => setSettings({ ...settings, siteName: e.target.value })}
@@ -110,7 +116,7 @@ export default function AdminSettingsPage() {
         </div>
 
         <div className="form-group" style={{ marginBottom: 0 }}>
-          <label className="form-label">Visitor Layout Theme</label>
+          <Label>Visitor Layout Theme</Label>
           <div style={{ display: 'flex', gap: 20, marginTop: 8 }}>
             {(['modern', 'classic'] as const).map(t => (
               <label
@@ -147,11 +153,13 @@ export default function AdminSettingsPage() {
             ))}
           </div>
         </div>
-      </div>
+      </CardContent></Card>
 
       <div className="a-hdr" style={{ marginTop: 8 }}>
         <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: 18, color: 'var(--navy)' }}>Hero Slides</h2>
-        <button className="btn btn-secondary" onClick={addSlide}>+ Add Slide</button>
+        <Button variant="outline" size="sm" onClick={addSlide} className="gap-1.5">
+          <FontAwesomeIcon icon={faPlus} /> Add Slide
+        </Button>
       </div>
 
       {settings.heroSlides.map((slide, idx) => (
@@ -161,15 +169,21 @@ export default function AdminSettingsPage() {
               Slide {idx + 1}
             </span>
             <div style={{ display: 'flex', gap: 4 }}>
-              <button className="btn btn-secondary" style={{ fontSize: 11, padding: '3px 8px' }} onClick={() => moveSlide(idx, -1)} disabled={idx === 0}>↑</button>
-              <button className="btn btn-secondary" style={{ fontSize: 11, padding: '3px 8px' }} onClick={() => moveSlide(idx, 1)} disabled={idx === settings.heroSlides.length - 1}>↓</button>
-              <button className="btn btn-danger" style={{ fontSize: 11, padding: '3px 8px' }} onClick={() => removeSlide(idx)}>Remove</button>
+              <Button variant="outline" size="sm" onClick={() => moveSlide(idx, -1)} disabled={idx === 0}>
+                <FontAwesomeIcon icon={faChevronUp} />
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => moveSlide(idx, 1)} disabled={idx === settings.heroSlides.length - 1}>
+                <FontAwesomeIcon icon={faChevronDown} />
+              </Button>
+              <Button variant="destructive" size="sm" onClick={() => removeSlide(idx)} className="gap-1">
+                <FontAwesomeIcon icon={faTrash} /> Remove
+              </Button>
             </div>
           </div>
 
           <div className="form-row" style={{ marginBottom: 12 }}>
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Type</label>
+              <Label>Type</Label>
               <select
                 className="form-input"
                 value={slide.type}
@@ -180,9 +194,8 @@ export default function AdminSettingsPage() {
               </select>
             </div>
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Title</label>
-              <input
-                className="form-input"
+              <Label>Title</Label>
+              <Input
                 type="text"
                 value={slide.title}
                 onChange={e => updateSlide(idx, { title: e.target.value })}
@@ -193,9 +206,8 @@ export default function AdminSettingsPage() {
 
           <div className="form-row" style={{ marginBottom: 12 }}>
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Subtitle</label>
-              <input
-                className="form-input"
+              <Label>Subtitle</Label>
+              <Input
                 type="text"
                 value={slide.subtitle || ''}
                 onChange={e => updateSlide(idx, { subtitle: e.target.value })}
@@ -203,9 +215,8 @@ export default function AdminSettingsPage() {
               />
             </div>
             <div className="form-group" style={{ margin: 0 }}>
-              <label className="form-label">Badge text (optional)</label>
-              <input
-                className="form-input"
+              <Label>Badge text (optional)</Label>
+              <Input
                 type="text"
                 value={slide.badge || ''}
                 onChange={e => updateSlide(idx, { badge: e.target.value })}
@@ -217,12 +228,12 @@ export default function AdminSettingsPage() {
           {slide.type === 'image' && (
             <div className="form-group" style={{ margin: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                <label className="form-label" style={{ marginBottom: 0 }}>Background Image</label>
+                <Label style={{ marginBottom: 0 }}>Background Image</Label>
                 <div style={{ display: 'flex', gap: 4 }}>
-                  <button type="button" className={`ed-tb-btn${(slideImageModes[idx] ?? 'upload') === 'upload' ? ' active' : ''}`} style={{ fontSize: 11, padding: '2px 8px' }}
-                    onClick={() => setSlideImageModes(m => ({ ...m, [idx]: 'upload' }))}>Upload</button>
-                  <button type="button" className={`ed-tb-btn${slideImageModes[idx] === 'url' ? ' active' : ''}`} style={{ fontSize: 11, padding: '2px 8px' }}
-                    onClick={() => setSlideImageModes(m => ({ ...m, [idx]: 'url' }))}>URL</button>
+                  <Button type="button" variant={(slideImageModes[idx] ?? 'upload') === 'upload' ? 'default' : 'outline'} size="sm"
+                    onClick={() => setSlideImageModes(m => ({ ...m, [idx]: 'upload' }))}>Upload</Button>
+                  <Button type="button" variant={slideImageModes[idx] === 'url' ? 'default' : 'outline'} size="sm"
+                    onClick={() => setSlideImageModes(m => ({ ...m, [idx]: 'url' }))}>URL</Button>
                 </div>
               </div>
               {slide.imageUrl && (
@@ -243,18 +254,17 @@ export default function AdminSettingsPage() {
                 </>
               ) : (
                 <div style={{ display: 'flex', gap: 6 }}>
-                  <input
-                    className="form-input"
+                  <Input
                     type="url"
                     placeholder="https://example.com/image.jpg"
                     value={slideUrlInputs[idx] ?? slide.imageUrl ?? ''}
                     onChange={e => setSlideUrlInputs(s => ({ ...s, [idx]: e.target.value }))}
                     style={{ flex: 1 }}
                   />
-                  <button type="button" className="btn btn-secondary" style={{ fontSize: 12, padding: '4px 12px', whiteSpace: 'nowrap' }}
+                  <Button variant="outline" size="sm"
                     onClick={() => { const u = slideUrlInputs[idx]?.trim(); if (u) updateSlide(idx, { imageUrl: u }); }}>
                     Apply
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
@@ -272,7 +282,7 @@ export default function AdminSettingsPage() {
       <div className="a-hdr" style={{ marginTop: 8 }}>
         <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: 18, color: 'var(--navy)' }}>Navigation Menu</h2>
       </div>
-      <div className="a-card">
+      <Card><CardContent className="pt-5">
         <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 12, color: 'var(--text-muted)', marginBottom: 12 }}>
           Build multi-level nav. Leave <strong>Link</strong> blank to make an item a group header only. Toggle <strong>●/○</strong> to show/hide.
         </p>
@@ -281,13 +291,13 @@ export default function AdminSettingsPage() {
           onChange={items => setSettings({ ...settings, navItems: items })}
           pages={allPages}
         />
-      </div>
+      </CardContent></Card>
 
       {/* ── Featured Announcements (Paper Archives) ── */}
       <div className="a-hdr" style={{ marginTop: 8 }}>
         <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: 18, color: 'var(--navy)' }}>Paper Archives Sidebar</h2>
       </div>
-      <div className="a-card">
+      <Card><CardContent className="pt-5">
         <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 12, color: 'var(--text-muted)', marginBottom: 12 }}>
           Check announcements to feature them in the &ldquo;Paper Archives&rdquo; widget on the announcements page.
         </p>
@@ -318,7 +328,7 @@ export default function AdminSettingsPage() {
             })}
           </div>
         )}
-      </div>
+      </CardContent></Card>
     </>
   );
 }

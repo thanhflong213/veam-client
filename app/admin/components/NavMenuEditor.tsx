@@ -1,6 +1,9 @@
 'use client';
 
 import type { NavItem, Page } from '../../lib/types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { Button } from '@/components/ui/button';
 
 interface Props {
   items: NavItem[];
@@ -157,14 +160,16 @@ export function NavMenuEditor({ items, onChange, pages }: Props) {
           onMoveDown={() => onChange(swapAt(items, i, i + 1))}
         />
       ))}
-      <button
+      <Button
         type="button"
-        className="btn btn-secondary"
-        style={{ marginTop: 8, fontSize: 12 }}
+        variant="outline"
+        size="sm"
+        style={{ marginTop: 8 }}
+        className="gap-1.5"
         onClick={() => onChange([...items, emptyItem()])}
       >
-        + Add nav item
-      </button>
+        <FontAwesomeIcon icon={faPlus} /> Add nav item
+      </Button>
     </div>
   );
 }

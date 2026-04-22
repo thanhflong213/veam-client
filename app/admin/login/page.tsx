@@ -4,6 +4,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { adminLogin } from '../../lib/api';
 import { saveToken } from '../../lib/auth';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -29,42 +33,47 @@ export default function LoginPage() {
 
   return (
     <div className="login-wrap">
-      <form className="login-card" onSubmit={handleSubmit}>
-        <h2>Admin Login</h2>
-        <p>Sign in to manage website content</p>
-        {error && <div className="login-err">{error}</div>}
-        <div className="form-group">
-          <label className="form-label">Email</label>
-          <input
-            className="form-input"
-            type="email"
-            placeholder="admin@veam.org"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-            autoFocus
-          />
-        </div>
-        <div className="form-group">
-          <label className="form-label">Password</label>
-          <input
-            className="form-input"
-            type="password"
-            placeholder="••••••••"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button
-          className="btn btn-primary"
-          type="submit"
-          disabled={loading}
-          style={{ width: '100%', justifyContent: 'center', marginTop: 4 }}
-        >
-          {loading ? 'Signing in…' : 'Sign In'}
-        </button>
-      </form>
+      <Card style={{ width: '100%', maxWidth: 380 }}>
+        <CardHeader>
+          <CardTitle style={{ fontFamily: "'Playfair Display',serif", fontSize: 24, color: 'var(--navy)' }}>
+            Admin Login
+          </CardTitle>
+          <CardDescription>Sign in to manage website content</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            {error && (
+              <div className="login-err">{error}</div>
+            )}
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="admin@veam.org"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+                autoFocus
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <Button type="submit" disabled={loading} className="w-full mt-1">
+              {loading ? 'Signing in…' : 'Sign In'}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -75,11 +75,8 @@ export function adminGetPages(token: string): Promise<Page[]> {
   return apiFetch<Page[]>('/pages/manage', { headers: authHeaders(token) });
 }
 
-export async function adminGetPage(id: string, token: string): Promise<Page> {
-  const pages = await apiFetch<Page[]>('/pages/manage', { headers: authHeaders(token) });
-  const page = pages.find(p => p._id === id);
-  if (!page) throw new Error('Page not found');
-  return page;
+export function adminGetPage(id: string, token: string): Promise<Page> {
+  return apiFetch<Page>(`/pages/manage/${id}`, { headers: authHeaders(token) });
 }
 
 export function adminCreatePage(data: Partial<Page>, token: string): Promise<Page> {
@@ -108,11 +105,8 @@ export function adminGetAnnouncements(token: string): Promise<AnnouncementsRespo
   return apiFetch<AnnouncementsResponse>('/announcements/manage?limit=100', { headers: authHeaders(token) });
 }
 
-export async function adminGetAnnouncement(id: string, token: string): Promise<Announcement> {
-  const res = await apiFetch<AnnouncementsResponse>('/announcements/manage?limit=100', { headers: authHeaders(token) });
-  const item = res.items?.find(a => a._id === id);
-  if (!item) throw new Error('Announcement not found');
-  return item;
+export function adminGetAnnouncement(id: string, token: string): Promise<Announcement> {
+  return apiFetch<Announcement>(`/announcements/manage/${id}`, { headers: authHeaders(token) });
 }
 
 export function adminCreateAnnouncement(data: Partial<Announcement>, token: string): Promise<Announcement> {
@@ -190,11 +184,8 @@ export function adminGetInstitutions(token: string): Promise<InstitutionsRespons
   return apiFetch<InstitutionsResponse>('/institutions/manage?limit=100', { headers: authHeaders(token) });
 }
 
-export async function adminGetInstitution(id: string, token: string): Promise<Institution> {
-  const res = await apiFetch<InstitutionsResponse>('/institutions/manage?limit=100', { headers: authHeaders(token) });
-  const item = res.items?.find(i => i._id === id);
-  if (!item) throw new Error('Institution not found');
-  return item;
+export function adminGetInstitution(id: string, token: string): Promise<Institution> {
+  return apiFetch<Institution>(`/institutions/manage/${id}`, { headers: authHeaders(token) });
 }
 
 export function adminCreateInstitution(data: Partial<Institution>, token: string): Promise<Institution> {

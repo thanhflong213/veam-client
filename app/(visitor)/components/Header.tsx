@@ -11,10 +11,49 @@ interface Props {
   pages: Page[];
 }
 
-function DesktopPageItem({ page }: { page: Page }) {
-  const children = (page.children ?? []).filter(
-    (c) => c.status === "published",
+function DesktopDropdownItem({ page }: { page: Page }) {
+  const children = (page.children ?? []).filter((c) => c.status === "published");
+
+  if (children.length === 0) {
+    return (
+      <li>
+        {page.disabled ? (
+          <span className="site-nav-dditem site-nav-ddgroup">{page.title}</span>
+        ) : (
+          <Link href={`/${page.slug}`} className="site-nav-dditem">
+            {page.title}
+          </Link>
+        )}
+      </li>
+    );
+  }
+
+  return (
+    <li className="site-nav-hassub">
+      <div className="site-nav-dditem site-nav-sub-trigger">
+        {page.disabled ? (
+          page.title
+        ) : (
+          <Link
+            href={`/${page.slug}`}
+            style={{ color: "inherit", textDecoration: "none" }}
+          >
+            {page.title}
+          </Link>
+        )}
+        <span className="nav-sub-caret"> ▸</span>
+      </div>
+      <ul className="site-nav-submenu">
+        {children.map((child, i) => (
+          <DesktopDropdownItem key={i} page={child} />
+        ))}
+      </ul>
+    </li>
   );
+}
+
+function DesktopPageItem({ page }: { page: Page }) {
+  const children = (page.children ?? []).filter((c) => c.status === "published");
 
   if (children.length === 0) {
     if (page.disabled) {
@@ -44,58 +83,9 @@ function DesktopPageItem({ page }: { page: Page }) {
         </Link>
       )}
       <ul className="site-nav-ddmenu">
-        {children.map((child, i) => {
-          const grandChildren = (child.children ?? []).filter(
-            (c) => c.status === "published",
-          );
-          if (grandChildren.length === 0) {
-            return (
-              <li key={i}>
-                {child.disabled ? (
-                  <span className="site-nav-dditem site-nav-ddgroup">
-                    {child.title}
-                  </span>
-                ) : (
-                  <Link href={`/${child.slug}`} className="site-nav-dditem">
-                    {child.title}
-                  </Link>
-                )}
-              </li>
-            );
-          }
-          return (
-            <li key={i} className="site-nav-hassub">
-              <div className="site-nav-dditem site-nav-sub-trigger">
-                {child.disabled ? (
-                  child.title
-                ) : (
-                  <Link
-                    href={`/${child.slug}`}
-                    style={{ color: "inherit", textDecoration: "none" }}
-                  >
-                    {child.title}
-                  </Link>
-                )}
-                <span className="nav-sub-caret"> ▸</span>
-              </div>
-              <ul className="site-nav-submenu">
-                {grandChildren.map((gc, j) => (
-                  <li key={j}>
-                    {gc.disabled ? (
-                      <span className="site-nav-dditem site-nav-ddgroup">
-                        {gc.title}
-                      </span>
-                    ) : (
-                      <Link href={`/${gc.slug}`} className="site-nav-dditem">
-                        {gc.title}
-                      </Link>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </li>
-          );
-        })}
+        {children.map((child, i) => (
+          <DesktopDropdownItem key={i} page={child} />
+        ))}
       </ul>
     </div>
   );
