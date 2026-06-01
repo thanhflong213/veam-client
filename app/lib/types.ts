@@ -71,6 +71,40 @@ export interface ContactInfo {
   businessHours?: string;
 }
 
+export interface ConferenceInfo {
+  date?: string;
+  location?: string;
+}
+
+export interface ImportantDate {
+  date: string;
+  title: string;
+  description?: string;
+}
+
+export interface Keynote {
+  name: string;
+  institution: string;
+  topic: string;
+  avatarUrl?: string | null;
+}
+
+export interface SpecialSession {
+  title: string;
+  chair: string;
+}
+
+export interface Publication {
+  title: string;
+  description?: string;
+}
+
+export interface OrganizingInstitution {
+  name: string;
+  role: string;
+  logoUrl?: string | null;
+}
+
 export interface Settings {
   _id?: string;
   siteName: string;
@@ -80,4 +114,10 @@ export interface Settings {
   featuredAnnouncements?: string[];
   socialLinks?: SocialLinks;
   contactInfo?: ContactInfo;
+  conferenceInfo?: ConferenceInfo;
+  importantDates?: ImportantDate[];
+  keynotes?: Keynote[];
+  specialSessions?: SpecialSession[];
+  publications?: Publication[];
+  organizingInstitutions?: OrganizingInstitution[];
 }
