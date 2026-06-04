@@ -29,9 +29,9 @@ export default async function SlugPage({ params }: Props) {
   return (
     <div className="page-body">
       <article>
-        <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: 28, color: 'var(--navy)', marginBottom: 22 }}>
+        {/* <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: 28, color: 'var(--navy)', marginBottom: 22 }}>
           {page.title}
-        </h1>
+        </h1> */}
         <div className="rc" dangerouslySetInnerHTML={{ __html: page.contentHtml ?? "" }} />
       </article>
       <VisitorSidebar />

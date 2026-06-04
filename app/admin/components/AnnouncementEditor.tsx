@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import TipTapImage from "@tiptap/extension-image";
+import { ResizableImage } from "./ResizableImage";
 import TipTapLink from "@tiptap/extension-link";
 import Youtube from "@tiptap/extension-youtube";
 import TextAlign from "@tiptap/extension-text-align";
@@ -52,8 +53,9 @@ const EXTENSIONS = [
   Highlight.configure({ multicolor: true }),
   TipTapLink.configure({ openOnClick: false }),
   TipTapImage,
+  ResizableImage,
   Youtube.configure({ controls: true }),
-  TextAlign.configure({ types: ["heading", "paragraph"] }),
+  TextAlign.configure({ types: ["heading", "paragraph", "image"] }),
   Table.configure({ resizable: true }),
   TableRow,
   TableHeader,
@@ -165,7 +167,7 @@ export default function AnnouncementEditor({ announcement }: Props) {
             "ep2-back",
           )}
         >
-          <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 11 }} /> Back
+          <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 8 }} /> Back
         </Link>
         <span className="ep2-title">
           {isNew ? "New Announcement" : title || "Edit Announcement"}

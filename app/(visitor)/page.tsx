@@ -56,10 +56,8 @@ export default async function HomePage() {
                 <div key={i} style={{ display: "contents" }}>
                   {i > 0 && <div className="strip-divider" />}
                   <div className="strip-item">
-                    <div>
-                      <span className="si-label">{slot.label}</span>
-                      <span className="si-val">{slot.value}</span>
-                    </div>
+                    <span className="si-label">{slot.label}</span>
+                    <span className="si-val">{slot.value}</span>
                   </div>
                 </div>
               ))}

@@ -113,30 +113,36 @@ export default async function InstitutionsPage({ searchParams }: Props) {
           </p>
         ) : (
           <div className="content-card-list">
-            {institutions.map((inst) => (
-              <div key={inst._id} className="content-card">
+            {institutions.map((inst) => {
+              const dateObj = inst.publishedAt ? new Date(inst.publishedAt) : null;
+              const day = dateObj?.getDate();
+              const mon = dateObj?.toLocaleString("en-US", { month: "short" }).toUpperCase();
+              const yr = dateObj?.getFullYear();
+
+              return (
                 <Link
+                  key={inst._id}
                   href={`/institutions/${inst.slug}`}
-                  className="content-card-title"
+                  className="event-card"
                 >
-                  {inst.title}
-                </Link>
-                {inst.publishedAt && (
-                  <div className="content-card-date">
-                    ⊙ {formatDate(inst.publishedAt)}
+                  <div className="event-card-inner">
+                    {dateObj && (
+                      <div className="ev-date">
+                        <div className="day">{day}</div>
+                        <div className="mon">{mon}</div>
+                        <div className="yr">{yr}</div>
+                      </div>
+                    )}
+                    <div className="ev-body">
+                      <h3>{inst.title}</h3>
+                      {inst.excerpt && (
+                        <p className="exc">{inst.excerpt}</p>
+                      )}
+                    </div>
                   </div>
-                )}
-                {inst.excerpt && (
-                  <p className="content-card-excerpt">{inst.excerpt}</p>
-                )}
-                <Link
-                  href={`/institutions/${inst.slug}`}
-                  className="content-card-btn"
-                >
-                  READ MORE →
                 </Link>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 

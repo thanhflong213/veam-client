@@ -61,11 +61,13 @@
 
 body {
   font-family: "Source Serif 4", Georgia, serif;
-  background: var(--white);
+  background: var(--cream);
   color: var(--text);
   font-size: 16px;
   line-height: 1.7;
   overflow-x: hidden;
+  /* overflow-y: auto; */
+  font-weight: 400;
 }
 
 /* ─── TOPBAR ─── */
@@ -90,7 +92,7 @@ body {
 
 /* ─── HEADER ─── */
 .site-header {
-  background: var(--grey);
+  background: var(--white);
   border-bottom: 2px solid var(--navy);
   position: sticky;
   top: 0;
@@ -141,6 +143,7 @@ body {
   color: var(--navy);
   line-height: 1.1;
   font-family: "Playfair Display", serif;
+  letter-spacing: 0.01em;
 }
 
 .logo-text .sub {
@@ -176,6 +179,7 @@ body {
   border: none;
   background: none;
   white-space: nowrap;
+  letter-spacing: 0.01em;
 }
 
 .site-nav a:hover {
@@ -530,35 +534,41 @@ body {
   gap: 32px;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-start;
 }
 
 .strip-item {
   display: flex;
-  align-items: center;
+  flex-direction: row;
+  align-items: baseline;
   gap: 10px;
   font-family: "DM Sans", sans-serif;
-  font-size: 13px;
+  font-size: 11px;
   color: #8fa5c8;
+  flex: 0 0 auto;
 }
 
 .strip-item .si-label {
   color: rgba(255, 255, 255, 0.5);
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   display: block;
+  font-weight: 400;
 }
 
 .strip-item .si-val {
   color: white;
   font-weight: 500;
   display: block;
+  font-size: 12px;
 }
 
 .strip-divider {
   width: 1px;
-  height: 32px;
+  height: 44px;
   background: rgba(255, 255, 255, 0.1);
+  flex: 0 0 auto;
 }
 
 /* ─── HOME SECTIONS ─── */
@@ -578,13 +588,17 @@ body {
 .section-head h2 {
   font-family: "Playfair Display", serif;
   font-size: 28px;
+  font-weight: 700;
   color: var(--navy);
   margin-bottom: 8px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 .section-head p {
   font-family: "DM Sans", sans-serif;
   font-size: 14px;
+  font-weight: 400;
   color: var(--text-muted);
 }
 
@@ -624,7 +638,8 @@ body {
   font-family: "Playfair Display", serif;
   font-size: 16px;
   color: var(--navy);
-  font-weight: 600;
+  font-weight: 700;
+  line-height: 1.3;
 }
 
 .kc-inst {
@@ -697,7 +712,7 @@ body {
 .tl-content h4 {
   font-family: "DM Sans", sans-serif;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--navy);
   margin-bottom: 3px;
 }
@@ -726,7 +741,7 @@ body {
 .sc-title {
   font-family: "DM Sans", sans-serif;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--navy);
   margin-bottom: 4px;
 }
@@ -755,7 +770,7 @@ body {
 .org-card h4 {
   font-family: "DM Sans", sans-serif;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--navy);
   margin-bottom: 4px;
 }
@@ -782,7 +797,7 @@ body {
 .pub-card h4 {
   font-family: "DM Sans", sans-serif;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--gold-light);
   margin-bottom: 6px;
 }
@@ -802,6 +817,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 280px;
   gap: 40px;
+  width: 100%;
 }
 
 .sidebar-widget {
@@ -854,8 +870,11 @@ body {
 .rc h2,
 .rc h3 {
   font-family: "Playfair Display", serif;
+  font-weight: 700;
   color: var(--navy);
   margin: 20px 0 10px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 .rc h1 {
@@ -871,6 +890,8 @@ body {
 .rc p {
   margin-bottom: 14px;
   line-height: 1.8;
+  font-weight: 400;
+  letter-spacing: -0.003em;
 }
 
 .rc img {
@@ -939,6 +960,7 @@ body {
   text-decoration: none;
   line-height: 1.3;
   transition: color 0.15s;
+  letter-spacing: -0.01em;
 }
 .content-card-title:hover {
   color: var(--gold);
@@ -995,8 +1017,11 @@ body {
 .ann-header h2 {
   font-family: "Playfair Display", serif;
   font-size: 28px;
+  font-weight: 700;
   color: var(--navy);
   margin-bottom: 6px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 .ann-header p {
@@ -1072,15 +1097,19 @@ body {
 .ev-body h3 {
   font-family: "Playfair Display", serif;
   font-size: 18px;
+  font-weight: 700;
   color: var(--navy);
   margin-bottom: 6px;
   line-height: 1.3;
+  letter-spacing: -0.01em;
 }
 
 .ev-body .exc {
   font-size: 13px;
+  font-weight: 400;
   color: var(--text-muted);
   line-height: 1.6;
+  margin: 0;
   font-family: "DM Sans", sans-serif;
   margin-bottom: 10px;
   display: -webkit-box;
@@ -1101,9 +1130,11 @@ body {
   color: var(--navy);
   font-family: "DM Sans", sans-serif;
   font-size: 11px;
-  padding: 2px 9px;
+  font-weight: 500;
+  padding: 3px 10px;
   border-radius: 20px;
   border: 1px solid var(--border);
+  letter-spacing: 0.02em;
 }
 
 /* Announcement detail */
@@ -1328,7 +1359,9 @@ body {
 .admin-main {
   background: #f0ede6;
   padding: 28px;
-  min-height: calc(100vh - 68px);
+  height: calc(100vh - 54px);
+  /* min-height: calc(100vh - 68px); */
+  overflow: auto;
 }
 
 .a-card {
@@ -1339,17 +1372,74 @@ body {
   margin-bottom: 20px;
 }
 
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.settings-section .a-hdr {
+  margin-top: 0;
+  margin-bottom: 0;
+  border-radius: 8px 8px 0 0;
+}
+
+.settings-section > [class*="Card"] {
+  margin-top: 0;
+  margin-bottom: 0;
+  border-radius: 0 0 8px 8px;
+}
+
+.settings-section .a-hdr + [class*="Card"] {
+  border-top: none;
+}
+
+.settings-section .slide-editor-item {
+  margin-top: 0;
+  margin-bottom: 0;
+  border-radius: 0;
+  border-top: none;
+}
+
+.settings-section .a-hdr + .slide-editor-item {
+  border-top: none;
+}
+
+.settings-section .slide-editor-item:last-child {
+  border-radius: 0 0 8px 8px;
+  margin-bottom: 0;
+}
+
 .a-hdr {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  padding: 16px 20px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px 8px 0 0;
+  margin-bottom: 0;
 }
 
 .a-hdr h2 {
   font-family: "Playfair Display", serif;
   font-size: 20px;
   color: var(--navy);
+}
+
+.a-hdr + [class*="Card"] {
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.slide-editor-item {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
 }
 
 .btn {
@@ -2074,8 +2164,12 @@ body {
     min-height: 380px;
     max-height: calc(100vh - 140px);
   }
-  .a-cell-trunc { max-width: 180px; }
-  .a-cell-trunc-wide { max-width: 220px; }
+  .a-cell-trunc {
+    max-width: 180px;
+  }
+  .a-cell-trunc-wide {
+    max-width: 220px;
+  }
   .a-tbl-scroll {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -2836,34 +2930,50 @@ body {
 }
 
 /* ─── PAGINATION ─── */
+.pagination {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
 .pg-btn {
-  min-width: 30px;
-  height: 30px;
-  padding: 0 6px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 8px;
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: 6px;
   background: white;
   color: var(--navy);
   font-family: "DM Sans", sans-serif;
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
   transition:
     background 0.15s,
-    color 0.15s;
+    color 0.15s,
+    border-color 0.15s;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  text-decoration: none;
 }
 .pg-btn:hover:not(:disabled) {
   background: var(--cream);
+  border-color: var(--gold);
 }
 .pg-btn.active {
   background: var(--navy);
   color: white;
   border-color: var(--navy);
+  font-weight: 600;
 }
 .pg-btn:disabled {
   cursor: default;
+  opacity: 0.5;
 }
 
 /* ===== NAV DROPDOWN (visitor header) ===== */
@@ -3349,22 +3459,49 @@ body {
     padding-left: 16px;
     padding-right: 16px;
   }
-  .hs-text { padding: 44px 16px 40px; }
-  .hs-img-overlay { padding: 28px 16px 26px; }
+  .hs-text {
+    padding: 44px 16px 40px;
+  }
+  .hs-img-overlay {
+    padding: 28px 16px 26px;
+  }
 
-  .home-section { padding-top: 40px; padding-bottom: 40px; }
-  .section-head h2 { font-size: 24px; }
-  .section-head { margin-bottom: 24px; }
+  .home-section {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+  .section-head h2 {
+    font-size: 24px;
+  }
+  .section-head {
+    margin-bottom: 24px;
+  }
 
-  .page-body { padding: 28px 16px; gap: 28px; }
-  .ann-header h2 { font-size: 24px; }
-  .ev-det-title { font-size: 26px; }
+  .page-body {
+    padding: 28px 16px;
+    gap: 28px;
+  }
+  .ann-header h2 {
+    font-size: 24px;
+  }
+  .ev-det-title {
+    font-size: 26px;
+  }
 
-  .site-footer { padding: 32px 0 18px; }
-  .site-footer .fg { gap: 28px; }
+  .site-footer {
+    padding: 32px 0 18px;
+  }
+  .site-footer .fg {
+    gap: 28px;
+  }
 
   /* RC content table: scroll horizontally */
-  .rc table { display: block; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .rc table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 
   /* === ADMIN === */
   /* ep2 editor header: allow wrap so actions don't overflow */
@@ -3380,92 +3517,198 @@ body {
     width: 100%;
     font-size: 14px;
   }
-  .ep2-back { order: 0; }
+  .ep2-back {
+    order: 0;
+  }
   .ep2-actions {
     order: 2;
     flex-wrap: wrap;
     gap: 4px;
   }
   /* ep2 layout: sidebar below on tablet already, shrink editor pane */
-  .ep2-editor-col { height: 45vh; }
+  .ep2-editor-col {
+    height: 45vh;
+  }
 
   /* Admin main: less padding */
-  .admin-main { padding: 20px 14px; }
+  .admin-main {
+    padding: 20px 14px;
+  }
 }
 
 /* ── 640px — Mobile (extends existing rules) ── */
 @media (max-width: 640px) {
   /* === VISITOR: smaller font sizes === */
-  .section-head h2 { font-size: 20px; }
-  .ann-header h2 { font-size: 20px; }
-  .content-card-title { font-size: 18px; }
-  .ev-det-title { font-size: 22px; }
-  .ev-body h3 { font-size: 16px; }
-  .hs-img-overlay h2 { font-size: 20px; }
-  .hs-text h1 { font-size: 26px; }
+  .section-head h2 {
+    font-size: 20px;
+  }
+  .ann-header h2 {
+    font-size: 20px;
+  }
+  .content-card-title {
+    font-size: 18px;
+  }
+  .ev-det-title {
+    font-size: 22px;
+  }
+  .ev-body h3 {
+    font-size: 16px;
+  }
+  .hs-img-overlay h2 {
+    font-size: 20px;
+  }
+  .hs-text h1 {
+    font-size: 26px;
+  }
 
   /* Visitor: tighter section spacing */
-  .home-section { padding: 32px 14px; }
-  .page-body { padding: 20px 14px; gap: 24px; }
-  .site-footer { padding: 28px 0 14px; }
-  .site-footer .fg { gap: 20px; }
+  .home-section {
+    padding: 32px 14px;
+  }
+  .page-body {
+    padding: 20px 14px;
+    gap: 24px;
+  }
+  .site-footer {
+    padding: 28px 0 14px;
+  }
+  .site-footer .fg {
+    gap: 20px;
+  }
 
   /* Visitor: mobile search button in mobile menu */
-  .mobile-menu { padding: 10px 14px 14px; }
+  .mobile-menu {
+    padding: 10px 14px 14px;
+  }
 
   /* Visitor: event card layout */
-  .event-card-inner { grid-template-columns: 56px 1fr; }
-  .ev-date { padding: 12px 6px; }
-  .ev-date .day { font-size: 22px; }
-  .ev-body { padding: 12px 14px; }
+  .event-card-inner {
+    grid-template-columns: 56px 1fr;
+  }
+  .ev-date {
+    padding: 12px 6px;
+  }
+  .ev-date .day {
+    font-size: 22px;
+  }
+  .ev-body {
+    padding: 12px 14px;
+  }
 
   /* === ADMIN === */
-  .admin-main { padding: 14px 10px; }
+  .admin-main {
+    padding: 14px 10px;
+  }
 
   /* Admin table section: scrollable, tighter height */
-  .a-tbl-section { height: calc(100vh - 185px); min-height: 360px; max-height: calc(100vh - 150px); }
-  .a-cell-trunc { max-width: 140px; }
-  .a-cell-trunc-wide { max-width: 180px; }
+  .a-tbl-section {
+    height: calc(100vh - 185px);
+    min-height: 360px;
+    max-height: calc(100vh - 150px);
+  }
+  .a-cell-trunc {
+    max-width: 140px;
+  }
+  .a-cell-trunc-wide {
+    max-width: 180px;
+  }
 
   /* Editor: compact header */
-  .ep2-header { padding: 7px 10px; gap: 5px; }
-  .ep2-actions { gap: 3px; }
+  .ep2-header {
+    padding: 7px 10px;
+    gap: 5px;
+  }
+  .ep2-actions {
+    gap: 3px;
+  }
   /* Editor sidebar: shorter on mobile */
-  .ep2-editor-col { height: 40vh; }
+  .ep2-editor-col {
+    height: 40vh;
+  }
   /* Editor toolbar: tighter wrap */
-  .ep2-toolbar-full { padding: 4px 8px; }
-  .ed-tb-btn { min-width: 26px; height: 24px; font-size: 11px; }
-  .ed-tb-select { height: 24px; font-size: 11px; }
+  .ep2-toolbar-full {
+    padding: 4px 8px;
+  }
+  .ed-tb-btn {
+    min-width: 26px;
+    height: 24px;
+    font-size: 11px;
+  }
+  .ed-tb-select {
+    height: 24px;
+    font-size: 11px;
+  }
 
   /* Settings: slide editor items */
-  .slide-editor-item { padding: 14px; }
+  .slide-editor-item {
+    padding: 14px;
+  }
 
   /* Admin header wrap */
-  .a-hdr { gap: 8px; }
-  .a-hdr h2 { font-size: 17px; }
+  .a-hdr {
+    gap: 8px;
+  }
+  .a-hdr h2 {
+    font-size: 17px;
+  }
 
   /* Pager on mobile: compact */
-  .a-pager-bar { padding: 4px 10px 6px; min-height: 40px; }
+  .a-pager-bar {
+    padding: 4px 10px 6px;
+    min-height: 40px;
+  }
 }
 
 /* ── 480px — Small mobile ── */
 @media (max-width: 480px) {
   /* === VISITOR === */
-  .section-head h2 { font-size: 18px; }
-  .ann-header h2 { font-size: 18px; }
-  .ev-det-title { font-size: 20px; }
-  .hs-text h1 { font-size: 22px; }
-  .hs-img-overlay h2 { font-size: 18px; }
-  .hs-text p { font-size: 13px; }
-  .home-section { padding: 24px 12px; }
-  .page-body { padding: 16px 12px; }
-  .site-footer { padding: 24px 0 12px; }
+  .section-head h2 {
+    font-size: 18px;
+  }
+  .ann-header h2 {
+    font-size: 18px;
+  }
+  .ev-det-title {
+    font-size: 20px;
+  }
+  .hs-text h1 {
+    font-size: 22px;
+  }
+  .hs-img-overlay h2 {
+    font-size: 18px;
+  }
+  .hs-text p {
+    font-size: 13px;
+  }
+  .home-section {
+    padding: 24px 12px;
+  }
+  .page-body {
+    padding: 16px 12px;
+  }
+  .site-footer {
+    padding: 24px 0 12px;
+  }
 
   /* === ADMIN === */
-  .admin-main { padding: 10px 8px; }
-  .a-tbl-section { height: calc(100vh - 190px); min-height: 320px; max-height: calc(100vh - 155px); }
-  .a-cell-trunc { max-width: 110px; }
-  .a-cell-trunc-wide { max-width: 140px; }
-  .ep2-header { padding: 6px 8px; }
-  .ep2-editor-col { height: 35vh; }
+  .admin-main {
+    padding: 10px 8px;
+  }
+  .a-tbl-section {
+    height: calc(100vh - 190px);
+    min-height: 320px;
+    max-height: calc(100vh - 155px);
+  }
+  .a-cell-trunc {
+    max-width: 110px;
+  }
+  .a-cell-trunc-wide {
+    max-width: 140px;
+  }
+  .ep2-header {
+    padding: 6px 8px;
+  }
+  .ep2-editor-col {
+    height: 35vh;
+  }
 }

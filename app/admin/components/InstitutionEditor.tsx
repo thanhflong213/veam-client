@@ -52,7 +52,7 @@ const EXTENSIONS = [
   TipTapLink.configure({ openOnClick: false }),
   TipTapImage,
   Youtube.configure({ controls: true }),
-  TextAlign.configure({ types: ["heading", "paragraph"] }),
+  TextAlign.configure({ types: ["heading", "paragraph", "image"] }),
   Table.configure({ resizable: true }),
   TableRow,
   TableHeader,
@@ -162,7 +162,7 @@ export default function InstitutionEditor({ institution }: Props) {
             "ep2-back",
           )}
         >
-          <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 11 }} /> Back
+          <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 8 }} /> Back
         </Link>
         <span className="ep2-title">
           {isNew ? "New Institution" : title || "Edit Institution"}

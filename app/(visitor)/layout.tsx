@@ -24,13 +24,13 @@ export default async function VisitorLayout({
 
   return (
     <ThemeProvider initial={initialTheme}>
-      {/* <div className="topbar">
+      <div className="topbar">
         <div className="inner">
           <span>✉ veam@veam.org</span>
           <span>☎ (84 24) 39351419</span>
           <span>🕐 8:00AM – 6:00PM</span>
         </div>
-      </div> */}
+      </div>
       <Header
         siteName={settings.siteName}
         pages={pages}

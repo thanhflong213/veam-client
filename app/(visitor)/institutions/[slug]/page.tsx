@@ -31,17 +31,17 @@ export default async function InstitutionDetailPage({ params }: Props) {
 
   const publishedDate = inst.publishedAt
     ? new Date(inst.publishedAt).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
     : null;
 
   return (
     <div className="page-body">
       <article>
         <Link href="/institutions" className="back-btn">
-          <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 11 }} /> Back
+          <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 8 }} /> Back
           to Institutions
         </Link>
         {/* eslint-disable-next-line @next/next/no-img-element */}

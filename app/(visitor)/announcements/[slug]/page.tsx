@@ -31,16 +31,16 @@ export default async function AnnouncementDetailPage({ params }: Props) {
 
   const publishedDate = ann.publishedAt
     ? new Date(ann.publishedAt).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
     : null;
   return (
     <div className="page-body">
       <article>
         <Link href="/announcements" className="back-btn">
-          <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 11 }} />
+          <FontAwesomeIcon icon={faArrowLeft} style={{ fontSize: 8 }} />
           Back to Announcements
         </Link>
         {/* eslint-disable-next-line @next/next/no-img-element */}
